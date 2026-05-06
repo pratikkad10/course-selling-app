@@ -22,20 +22,20 @@ export const signupController = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ error: "User already exists" });
         }
-        const hashedPassword = await bcrypt.hash(validData.password, 10);
+        const hashedPassword = await bcrypt.hash(password, 10);
         const rawVerificationToken = crypto.randomBytes(32).toString("hex");
+        console.log("Raw verification token:", rawVerificationToken);
         const hashedVerificationToken = crypto
             .createHash("sha256")
             .update(rawVerificationToken)
             .digest("hex");
 
-        const verificationLink = `${process.env.FRONTEND_URL}/verify/${rawVarificationToken}`;
+        const verificationLink = `${process.env.FRONTEND_URL}/verify/${rawVerificationToken}`;
         //TODO: send email with an verification link including verification link
         console.log("Verification token:", rawVerificationToken);
         console.log("Verification link:", verificationLink);
-
         const newUser = await User.create({
-            ...validData,
+            ...validData.data,
             password: hashedPassword,
             verificationToken: hashedVerificationToken,
             verificationTokenExpires: Date.now() + 15 * 60 * 1000,
@@ -48,6 +48,7 @@ export const signupController = async (req, res) => {
         if (error.code === 11000) {
             return res.status(400).json({ error: "Email already exists" });
         }
+        console.error(error);
         res.status(500).json({ error: "Internal server error" });
     }
 }
@@ -65,7 +66,7 @@ export const signinController = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
-        const isPasswordValid = await bcrypt.compare(validData.password, user.password);
+        const isPasswordValid = await bcrypt.compare(validData.data.password, user.password);
         if (!isPasswordValid) {
             return res.status(401).json({ error: "Invalid password" });
         }
@@ -227,15 +228,16 @@ export const updateProfileController = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
-        if (result.email) {
-            const existingUser = await User.findOne({ email: result.email });
+        if (result.data.email) {
+            const existingUser = await User.findOne({ email: result.data.email });
             if (existingUser && existingUser._id.toString() !== user._id.toString()) {
                 return res.status(400).json({ error: "Email already in use" });
             }
         }
-        for (const key in result) {
-            if (result[key] !== undefined) {
-                user[key] = result[key];
+        const data = result.data;
+        for (const key in data) {
+            if (data[key] !== undefined) {
+                user[key] = data[key];
             }
         }
         await user.save();
@@ -377,7 +379,7 @@ export const deactivateAccountController = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
-        const isMatch = await bcrypt.compare(validPassword.password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
             return res.status(400).json({ error: "Incorrect password" });
@@ -398,7 +400,7 @@ export const reactivateAccountController = async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
-        const isMatch = await bcrypt.compare(validPassword.password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(400).json({ error: "Incorrect password" });
         }
