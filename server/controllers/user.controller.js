@@ -154,8 +154,9 @@ export const forgotPasswordController = async (req, res) => {
         user.resetPasswordToken = hashedToken;
         user.resetPasswordExpires = Date.now() + 15 * 60 * 1000;
         await user.save();
-        const resetLink = `${process.env.FRONTEND_URL}/reset-password/${hashedToken}`;
+        const resetLink = `${process.env.FRONTEND_URL}/reset-password/${rawToken}`;
         // TODO: send email here
+        console.log("Reset token:", rawToken);
         console.log("Reset link:", resetLink);
         res.status(200).json({ message: "Password reset link sent" });
     } catch (e) {
@@ -203,6 +204,7 @@ export const resetPasswordController = async (req, res) => {
         await user.save();
         res.status(200).json({ message: "Password reset successful" });
     } catch (e) {
+        console.log(e);
         res.status(500).json({ error: "Internal server error" });
     }
 };
@@ -356,7 +358,7 @@ export const deleteAccountController = async (req, res) => {
 
 export const deactivateAccountController = async (req, res) => {
     try {
-        const userId = req.user?._id;
+        const userId = req.user?._id;        
         if (!userId) {
             return res.status(401).json({ error: "Unauthorized" });
         }
@@ -365,7 +367,7 @@ export const deactivateAccountController = async (req, res) => {
         if (!validPassword.success) {
             return res.status(400).json({ error: validPassword.error });
         }
-        const user = await User.findById(userId);
+        const user = await User.findById(userId);        
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -377,6 +379,10 @@ export const deactivateAccountController = async (req, res) => {
 
         user.isActive = false;
         await user.save();
+
+        res.status(200).json({
+            message: "Account deactivated"
+        })
     } catch (e) {
         res.status(500).json({ error: "Internal server error" });
     }
@@ -387,6 +393,7 @@ export const reactivateAccountController = async (req, res) => {
         const userId = req.user?._id;
         const { password } = req.body;
         const validPassword = passwordSchema.safeParse({ password });
+        const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ error: "User not found" });
         }
@@ -394,6 +401,7 @@ export const reactivateAccountController = async (req, res) => {
         if (!isMatch) {
             return res.status(400).json({ error: "Incorrect password" });
         }
+        
         user.isActive = true;
         await user.save();
         res.status(200).json({ message: "Account reactivated successfully" });
