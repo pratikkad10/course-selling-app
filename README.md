@@ -1,4 +1,4 @@
-# 100x Course Selling
+# Course Selling
 
 A full-stack course selling platform built with the MERN stack (React, Node.js, Express, and MongoDB) that allows instructors to create and manage courses while students can browse, purchase, and access content seamlessly. The app includes secure authentication, payment integration, course progress tracking, and an intuitive dashboard for both admins and users.
 
