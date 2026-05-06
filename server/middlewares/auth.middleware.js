@@ -1,4 +1,10 @@
 
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+import { User } from "../models/user.model.js";
+dotenv.config();
+
+
 export const auth = async (req, res, next) => {
     try {
         const token = req.cookies.token;
@@ -16,6 +22,7 @@ export const auth = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: "Internal server error" });
     }
 }
