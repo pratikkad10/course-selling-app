@@ -250,10 +250,6 @@ export const updatePasswordController = async (req, res) => {
         if (!req.user?._id) {
             return res.status(401).json({ error: "Unauthorized" });
         }
-        const isSamePassword = await bcrypt.compare(newPassword, user.password);
-        if (isSamePassword) {
-            return res.status(400).json({ error: "New password must be different" });
-        }
         if (!oldPassword || !newPassword) {
             return res.status(400).json({ error: "Invalid request" });
         }
@@ -270,6 +266,7 @@ export const updatePasswordController = async (req, res) => {
         await user.save();
         res.status(200).json({ message: "Password updated successfully" });
     } catch (e) {
+        console.log(e);
         res.status(500).json({ error: "Internal server error" });
     }
 }
