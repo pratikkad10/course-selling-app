@@ -17,7 +17,7 @@ export const updateProfileSchema = zod.object({
     email: zod.string().email(),
     contactNumber: zod.string(),
     gender: zod.enum(['male', 'female', 'other']),
-    dateOfBirth: zod.date(),
+    dateOfBirth: zod.coerce.date(),
     address: zod.string(),
     bio: zod.string(),
     profileImage: zod.string(),
