@@ -26,6 +26,12 @@ const lessonschema = new Schema({
         type: Boolean,
         default: false,
     },
+    instructorId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        index: true,
+    },
     moduleId: {
         type: Schema.Types.ObjectId,
         ref: 'Module',

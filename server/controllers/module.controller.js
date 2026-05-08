@@ -81,19 +81,19 @@ export const updateModuleController = async (req, res) => {
 export const deleteModuleController = async (req, res) => {
     try {
         const { id } = req.params;
-        if(!id){
+        if (!id) {
             return res.status(400).json({ error: "Invalid request" });
         }
         if (!req.user?._id) {
             return res.status(401).json({ error: "Unauthorized" });
         }
-        
+
         const module = await Module.findOneAndDelete({
             _id: id,
             instructorId: req.user._id
         });
 
-        if(!module){
+        if (!module) {
             return res.status(404).json({ error: "Module not found" });
         }
 
@@ -107,7 +107,7 @@ export const deleteModuleController = async (req, res) => {
 export const getModuleController = async (req, res) => {
     try {
         const { id } = req.params;
-        if(!id){
+        if (!id) {
             return res.status(400).json({ error: "Invalid request" });
         }
         if (!req.user?._id) {
@@ -119,9 +119,9 @@ export const getModuleController = async (req, res) => {
             instructorId: req.user._id
         });
 
-        if(!module){
+        if (!module) {
             return res.status(404).json({ error: "Module not found" });
-        }    
+        }
 
         res.status(200).json({ message: "Module found successfully", module });
     } catch (error) {
@@ -129,3 +129,30 @@ export const getModuleController = async (req, res) => {
         res.status(500).json({ error: "Internal server error" });
     }
 };
+
+export const getModulesController = async (req, res) => {
+    try {
+        const { courseId } = req.params;
+        if (!courseId) {
+            return res.status(400).json({ error: "Invalid request" });
+        }
+        if (!req.user?._id) {
+            return res.status(401).json({ error: "Unauthorized" });
+        }
+        const modules = await Module.find({
+            courseId,
+            instructorId: req.user._id
+        }).select("_id title order");
+
+        if (!modules) {
+            return res.status(404).json({ error: "Modules not found" });
+        }
+
+        res.status(200).json({ message: "Modules found successfully", modules });
+
+    } catch (error) {
+        console.log(e);
+        res.status(500).json({ error: "Internal server error" });
+    }
+
+}
