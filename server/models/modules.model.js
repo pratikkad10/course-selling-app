@@ -9,6 +9,12 @@ const modulesschema = new Schema({
         minLength: 3,
         maxLength: 100,
     },
+    instructorId: {
+        type: Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        index: true,
+    },
     courseId: {
         type: Schema.Types.ObjectId,
         ref: 'Course',
