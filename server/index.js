@@ -28,6 +28,18 @@ cloudinaryConfig();
 //user routes
 app.use('/api/v1/user', router);
 
+//courses routes
+app.use('/api/v1/courses', router);
+
+//payment routes
+app.use('/api/v1/payment', router);
+
+//module routes
+app.use('/api/v1/module', router);
+
+//lesson routes
+app.use('/api/v1/lesson', router);
+
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
