@@ -36,3 +36,5 @@ const paymentschema = new Schema({
 },{
     timestamps: true,
 })
+
+export const Payment = model('Payment', paymentschema);

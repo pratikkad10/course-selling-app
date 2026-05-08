@@ -15,20 +15,22 @@ const enrollmentschema = new Schema({
     },
     status: {
         type: String,
-        enum: ['active', 'completed', 'cancelled'],
+        enum: ['pending','paid', 'failed', 'cancelled'],
         default: 'pending',
     },
-    progress: {
-        completedLessons: [{
-            type: Schema.Types.ObjectId,
-            ref: 'Lesson',
-        }],
-        percentage: {
-            type: Number,
-            default: 0,
-            min: 0,
-            max: 100,
-        },
+    paymentId: {
+        type: Schema.Types.ObjectId,
+        ref: 'Payment',
+    },
+    amount:{
+        type: Number,
+        required: true,
+        min: 0,
+    },
+    orderId:{
+        type: String,
+        required: true,
+        unique: true,
     },
     enrolledAt: {
         type: Date,
